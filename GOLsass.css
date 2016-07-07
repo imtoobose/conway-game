@@ -3,7 +3,19 @@
   width: 500px;
   background: white;
   color: white;
-  z-index: -200; }
+  margin: 0 auto;
+  margin-top: 10px;
+  position: relative; }
+
+#panel {
+  position: relative;
+  display: block;
+  padding: 0;
+  height: 50px;
+  width: 500px;
+  background: #d9ac26;
+  margin: 0 auto;
+  margin-bottom: 50px; }
 
 .cell {
   height: 9px;
@@ -17,6 +29,8 @@
   color: white;
   z-index: 5;
   border-radius: 2px; }
+  .cell:hover {
+    background: rgba(217, 172, 38, 0.4); }
 
 .cell-alive {
   background: #d9ac26; }

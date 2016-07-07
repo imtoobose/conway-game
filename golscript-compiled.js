@@ -1,3 +1,37 @@
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var playback = {
+  "paused": "no",
+  "anim": null
+};
+
+var Button = React.createClass({
+  displayName: "Button",
+
+  render: function () {
+    return React.createElement("button", _extends({}, this.props, { className: "panel-button" }));
+  }
+});
+
+var Panel = React.createClass({
+  displayName: "Panel",
+
+  render: function () {
+    var list = ["play", "pause", "clear"];
+    return React.createElement(
+      "div",
+      _extends({}, this.props, { className: "control-panel" }),
+      list.map(function (data) {
+        return React.createElement(
+          Button,
+          { id: data },
+          data
+        );
+      })
+    );
+  }
+});
+
 var Cell = React.createClass({
   displayName: "Cell",
 
@@ -102,12 +136,17 @@ var GameBox = React.createClass({
 
   //will only be called once, at the beginning
   //creates random cells
-  createCells: function () {
+  createCells: function (option) {
     var choice;
     var arr = [];
     for (var i = 0; i < this.props.rows; i++) {
       for (var j = 0; j < this.props.cols; j++) {
-        choice = Math.floor(Math.random() * 10) == 1 ? "alive" : "dead";
+        if (option == "dead" || option == "alive") {
+          console.log(option);
+          choice = option;
+        } else {
+          choice = Math.floor(Math.random() * 10) == 1 ? "alive" : "dead";
+        }
         arr.push(choice);
       }
     }
@@ -146,22 +185,69 @@ var GameBox = React.createClass({
     });
   },
 
+  handleClick: function (e) {
+    console.log(e.target.id);
+
+    if (e.target.id == "play" && playback.paused == "yes") {
+      playback.paused = "no";
+      window.requestAnimationFrame(playback.anim);
+      return;
+    } else if (e.target.id == "pause" && playback.paused == "no") {
+      playback.paused = "yes";
+      return;
+    } else if (e.target.id == "clear") {
+      playback.paused = "yes";
+      this.setState(function () {
+        return { list: this.createCells("dead") };
+      });
+      return;
+    }
+
+    var ls = e.target.classList;
+    var cop = this.state.list.slice();
+    var ind = +e.target.id.slice(4);
+    for (var i in ls) {
+      if (ls[i] == "cell-alive") {
+        e.target.classList.remove("cell-alive");
+        e.target.classList.add("cell-dead");
+        cop[ind] = "dead";
+        break;
+      } else if (ls[i] == "cell-dead") {
+        e.target.classList.remove("cell-dead");
+        e.target.classList.add("cell-alive");
+        cop[ind] = "alive";
+        break;
+      }
+    }
+    this.setState(function () {
+      return { list: cop };
+    });
+  },
+
   //render the cells
   render: function () {
     var rows = this.props.rows,
         cols = this.props.cols;
     return React.createElement(
       "div",
-      { className: this.props.className },
+      { className: this.props.className, onClick: this.handleClick },
+      React.createElement(Panel, { id: "panel" }),
       this.state.list.map(function (data, index) {
-        return React.createElement(Cell, { className: "cell cell-" + data, id: Math.floor(index / rows) + "-" + index % cols + "-" + data, key: index });
+        return React.createElement(Cell, { className: "cell cell-" + data, id: "val-" + index, key: index });
       })
     );
   }
 });
-//time: to keep the animation going and get the generation
-var time = 0;
-setInterval(function () {
-  time += 1;
-  ReactDOM.render(React.createElement(GameBox, { className: "outerbox", times: time }), document.getElementById("Board"));
-}, 50);
+
+(function () {
+  //time: to keep the animation going and get the generation
+  var time = 0;
+  playback.anim = function () {
+    time += 1;
+    ReactDOM.render(React.createElement(GameBox, { className: "outerbox", times: time }), document.getElementById("Board"));
+    if (playback.paused == "no") {
+      window.requestAnimationFrame(playback.anim);
+    }
+  };
+  window.requestAnimationFrame(playback.anim);
+}).call(this);

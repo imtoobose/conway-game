@@ -6,7 +6,21 @@ $alive: hsla(45, 70, 50, 1);
   width:500px;
   background:white;
   color:white;
-  z-index:-200;
+  //z-index:-100;
+  margin: 0 auto;
+  margin-top:10px;
+  position:relative;
+}
+
+#panel{
+  position:relative;
+  display:block;
+  padding: 0;
+  height: 50px;
+  width:500px;
+  background: $alive;
+  margin: 0 auto;
+  margin-bottom: 50px;
 }
 
 .cell{
@@ -22,6 +36,9 @@ $alive: hsla(45, 70, 50, 1);
   color:white;
   z-index:5;
   border-radius: 2px;
+  &:hover{
+    background: hsla(45,70,50, 0.4);
+  }
 }
 
 .cell-alive{
