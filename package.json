@@ -1,0 +1,21 @@
+{
+  "name": "game-of-life",
+  "version": "1.0.0",
+  "description": "Conway's game of life",
+  "dependencies": {
+    "babel-cli": "^6.10.1",
+    "babel-core": "^6.10.4",
+    "babel-preset-react": "^6.11.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.10.1"
+    },
+  "babel": {
+    "presets": ["react"]
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "saumitra bose",
+  "license": "ISC"
+}
