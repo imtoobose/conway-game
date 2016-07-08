@@ -77,7 +77,14 @@ var Cell = React.createClass({
   displayName: "Cell",
 
   render: function () {
-    return React.createElement("div", this.props);
+    //color stuff
+    //var arr    = ["#96F751", "#16DB93", "#EFEA5A", "#F29E4C"],
+    var ind = +this.props.id.slice(4),
+        colors = {
+      "background": "hsl(" + (50 + Math.floor((Math.floor(ind / 40) + ind % 60) * 1.5)) + ", 80%, 70%)"
+    };
+
+    return React.createElement("div", _extends({}, this.props, { style: this.props.randomness == "on" ? this.props.alive == "alive" ? colors : null : null }));
   }
 });
 
@@ -226,17 +233,14 @@ var GameBox = React.createClass({
     //this causes us to have only one state component
     //all cells are stateless
     if (deadcnt == this.props.rows * this.props.cols) playback.paused = "yes", playback.restart = "yes";
-    console.log(deadcnt);
     this.setState(function () {
       return { list: ls };
     });
   },
 
   handleClick: function (e) {
-    console.log(e.target.id);
-
+    //panel options
     switch (e.target.id) {
-
       case "play":
         if (playback.paused == "yes") {
           playback.paused = "no";
@@ -269,7 +273,6 @@ var GameBox = React.createClass({
         return;
 
       case "grid":
-        console.log(this.state.grid);
         this.setState(function () {
           if (this.state.grid == "off") var ans = "on";else ans = "off";
           return { grid: ans };
@@ -277,13 +280,14 @@ var GameBox = React.createClass({
         return;
 
       case "fade":
-        console.log(fadeval);
         if (this.state.fade == "off") var fadeval = "on";else fadeval = "off";
         this.setState(function () {
           return { fade: fadeval };
         });
         return;
     }
+
+    //for clicking cells
     var ls = e.target.classList;
     var cop = this.state.list.slice();
     var ind = +e.target.id.slice(4);
@@ -321,7 +325,7 @@ var GameBox = React.createClass({
       { className: this.props.className, onClick: this.handleClick, style: over },
       React.createElement(Panel, { id: "panel", gen: playback.restart == "no" ? this.props.generation : 0 }),
       this.state.list.map(function (data, index) {
-        return React.createElement(Cell, { className: "cell cell-" + data + " grid-" + gridval + " fade-" + fadeval, id: "val-" + index, key: index });
+        return React.createElement(Cell, { className: "cell cell-" + data + " grid-" + gridval + " fade-" + fadeval, id: "val-" + index, key: index, randomness: gridval, alive: data });
       })
     );
   }
