@@ -106,11 +106,14 @@ body {
     .panel-button:hover i {
       font-size: 35px; }
 
+.activebutt {
+  color: #16DB93; }
+
 #foot {
   display: block;
   width: 720px;
   height: 100px;
-  border-top: solid #626262 2px;
+  border-top: solid #494949 2px;
   color: #626262;
   position: relative;
   margin: 0 auto;

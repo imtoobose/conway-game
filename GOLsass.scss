@@ -142,12 +142,15 @@ body{
   }
 }
 
+.activebutt{
+  color:$alive;
+}
 
 #foot{
   display:block;
   width:720px;
   height: 100px;
-  border-top: solid lighten($back, 20%) 2px;
+  border-top: solid lighten($back, 10%) 2px;
   color: lighten($back, 20%);
   position:relative;
   margin: 0 auto;

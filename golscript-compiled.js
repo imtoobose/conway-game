@@ -274,13 +274,25 @@ var GameBox = React.createClass({
 
       case "grid":
         this.setState(function () {
-          if (this.state.grid == "off") var ans = "on";else ans = "off";
+          if (this.state.grid == "off") {
+            var ans = "on";
+            document.getElementById("grid").classList.add("activebutt");
+          } else {
+            ans = "off";
+            document.getElementById("grid").classList.remove("activebutt");
+          }
           return { grid: ans };
         });
         return;
 
       case "fade":
-        if (this.state.fade == "off") var fadeval = "on";else fadeval = "off";
+        if (this.state.fade == "off") {
+          var fadeval = "on";
+          document.getElementById("fade").classList.add("activebutt");
+        } else {
+          fadeval = "off";
+          document.getElementById("fade").classList.remove("activebutt");
+        }
         this.setState(function () {
           return { fade: fadeval };
         });
