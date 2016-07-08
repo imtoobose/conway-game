@@ -2,14 +2,34 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var playback = {
   "paused": "no",
-  "anim": null
+  "anim": null,
+  "restart": "no"
 };
 
 var Button = React.createClass({
   displayName: "Button",
 
   render: function () {
-    return React.createElement("button", _extends({}, this.props, { className: "panel-button" }));
+    var iconClass;
+    switch (this.props.id) {
+      case "play":
+        iconClass = "ion-play";break;
+      case "pause":
+        iconClass = "ion-pause";break;
+      case "clear":
+        iconClass = "ion-android-delete";break;
+      case "random":
+        iconClass = "ion-shuffle";break;
+      case "grid":
+        iconClass = "ion-grid";break;
+      case "fade":
+        iconClass = "ion-star";break;
+    }
+    return React.createElement(
+      "button",
+      _extends({}, this.props, { className: "panel-button", title: this.props.id.toUpperCase() }),
+      React.createElement("i", { className: iconClass, id: this.props.id })
+    );
   }
 });
 
@@ -17,16 +37,28 @@ var Panel = React.createClass({
   displayName: "Panel",
 
   render: function () {
-    var list = ["play", "pause", "clear"];
+    var list = ["play", "pause", "clear", "random", "grid", "fade"];
+    var gen = this.props.gen;
+
     return React.createElement(
       "div",
       _extends({}, this.props, { className: "control-panel" }),
+      React.createElement(
+        "div",
+        { className: "timer" },
+        React.createElement(
+          "span",
+          { className: "timerDescription" },
+          "Generation: "
+        ),
+        React.createElement(
+          "span",
+          { className: "timerNumber" },
+          gen
+        )
+      ),
       list.map(function (data) {
-        return React.createElement(
-          Button,
-          { id: data },
-          data
-        );
+        return React.createElement(Button, { id: data });
       })
     );
   }
@@ -46,15 +78,17 @@ var GameBox = React.createClass({
   //create random cells in list
   getInitialState: function () {
     return {
-      list: this.createCells()
+      list: this.createCells(),
+      grid: "off",
+      fade: "off"
     };
   },
 
   //initial rows and columns
   getDefaultProps: function () {
     return {
-      rows: 50,
-      cols: 50
+      rows: 40,
+      cols: 60
     };
   },
 
@@ -188,21 +222,54 @@ var GameBox = React.createClass({
   handleClick: function (e) {
     console.log(e.target.id);
 
-    if (e.target.id == "play" && playback.paused == "yes") {
-      playback.paused = "no";
-      window.requestAnimationFrame(playback.anim);
-      return;
-    } else if (e.target.id == "pause" && playback.paused == "no") {
-      playback.paused = "yes";
-      return;
-    } else if (e.target.id == "clear") {
-      playback.paused = "yes";
-      this.setState(function () {
-        return { list: this.createCells("dead") };
-      });
-      return;
-    }
+    switch (e.target.id) {
 
+      case "play":
+        if (playback.paused == "yes") {
+          playback.paused = "no";
+          window.requestAnimationFrame(playback.anim);
+          return;
+        }
+
+      case "pause":
+        if (playback.paused == "no") {
+          playback.paused = "yes";
+          return;
+        }
+
+      case "clear":
+        playback.paused = "yes";
+        playback.restart = "yes";
+        this.setState(function () {
+          return {
+            list: this.createCells("dead")
+          };
+        });
+        return;
+
+      case "random":
+        playback.restart = "yes";
+        this.setState(function () {
+          return { list: this.createCells() };
+        });
+        return;
+
+      case "grid":
+        console.log(this.state.grid);
+        this.setState(function () {
+          if (this.state.grid == "off") var ans = "on";else ans = "off";
+          return { grid: ans };
+        });
+        return;
+
+      case "fade":
+        console.log(fadeval);
+        if (this.state.fade == "off") var fadeval = "on";else fadeval = "off";
+        this.setState(function () {
+          return { fade: fadeval };
+        });
+        return;
+    }
     var ls = e.target.classList;
     var cop = this.state.list.slice();
     var ind = +e.target.id.slice(4);
@@ -220,20 +287,27 @@ var GameBox = React.createClass({
       }
     }
     this.setState(function () {
-      return { list: cop };
+      return {
+        list: cop };
     });
   },
 
   //render the cells
   render: function () {
     var rows = this.props.rows,
-        cols = this.props.cols;
+        cols = this.props.cols,
+        gridval = this.state.grid,
+        fadeval = this.state.fade,
+        over = {
+      overflow: gridval == "off" ? "visible" : "hidden"
+    };
+
     return React.createElement(
       "div",
-      { className: this.props.className, onClick: this.handleClick },
-      React.createElement(Panel, { id: "panel" }),
+      { className: this.props.className, onClick: this.handleClick, style: over },
+      React.createElement(Panel, { id: "panel", gen: this.props.generation }),
       this.state.list.map(function (data, index) {
-        return React.createElement(Cell, { className: "cell cell-" + data, id: "val-" + index, key: index });
+        return React.createElement(Cell, { className: "cell cell-" + data + " grid-" + gridval + " fade-" + fadeval, id: "val-" + index, key: index });
       })
     );
   }
@@ -244,7 +318,13 @@ var GameBox = React.createClass({
   var time = 0;
   playback.anim = function () {
     time += 1;
-    ReactDOM.render(React.createElement(GameBox, { className: "outerbox", times: time }), document.getElementById("Board"));
+
+    if (playback.restart == "yes") {
+      time = 0;
+      playback.restart = "no";
+    }
+
+    ReactDOM.render(React.createElement(GameBox, { className: "outerbox", generation: time }), document.getElementById("Board"));
     if (playback.paused == "no") {
       window.requestAnimationFrame(playback.anim);
     }

@@ -1,12 +1,23 @@
 var playback={
     "paused":"no",
-    "anim": null
+    "anim": null,
+    "restart":"no"
 };
 
 var Button =React.createClass({
   render: function(){
+    var iconClass;
+    switch(this.props.id){
+      case "play"   : iconClass= "ion-play"; break;
+      case "pause"  : iconClass= "ion-pause"; break;
+      case "clear"  : iconClass= "ion-android-delete"; break;
+      case "random" : iconClass= "ion-shuffle"; break;
+      case "grid"   : iconClass= "ion-grid"; break;
+      case "fade"   : iconClass= "ion-star"; break;
+    }
     return(
-      <button {...this.props} className="panel-button">
+      <button {...this.props} className="panel-button" title={this.props.id.toUpperCase()}>
+        <i className={iconClass} id={this.props.id}/>
       </button>
       )
   }
@@ -14,14 +25,19 @@ var Button =React.createClass({
 
 var Panel= React.createClass({
   render: function(){
-    var list= ["play", "pause", "clear"];
+    var list= ["play", "pause", "clear", "random", "grid", "fade"];
+    var gen= this.props.gen;
+
     return(
       <div {...this.props} className="control-panel">
-        {
-          list.map(function(data){
+        <div className="timer" >
+          <span className="timerDescription">Generation: </span> 
+          <span className="timerNumber">{gen}</span>
+        </div>
+          {
+            list.map(function(data){
             return(
             <Button id={data}> 
-              {data}
             </Button>
             )
           })
@@ -35,7 +51,7 @@ var Cell= React.createClass({
   render: function(){
     return(
      <div {...this.props}>  
-      </div> 
+      </div>
     )
   }  
 });
@@ -44,15 +60,17 @@ var GameBox= React.createClass({
   //create random cells in list
   getInitialState: function(){
     return({
-      list: this.createCells()
+      list: this.createCells(),
+      grid: "off",
+      fade: "off"
     })
   },
 
   //initial rows and columns
   getDefaultProps: function(){
     return({
-      rows: 50,
-      cols: 50,
+      rows: 40,
+      cols: 60,
     })
   },
 
@@ -205,23 +223,57 @@ var GameBox= React.createClass({
   handleClick: function(e){
     console.log(e.target.id);
 
-    if(e.target.id=="play" && playback.paused=="yes"){
-      playback.paused="no";
-      window.requestAnimationFrame(playback.anim);
-      return;
-    }
-    else if(e.target.id=="pause" && playback.paused=="no"){
-      playback.paused="yes";
-      return;
-    }
-    else if(e.target.id=="clear"){
-      playback.paused="yes";
-      this.setState(function(){
-        return({list: this.createCells("dead")})
-      });
-      return;
-    }
+    switch(e.target.id){
 
+      case "play": 
+        if(playback.paused=="yes"){
+          playback.paused="no";
+          window.requestAnimationFrame(playback.anim);
+          return;
+        }
+
+      case "pause":
+        if(playback.paused=="no"){
+          playback.paused="yes";
+          return;
+        }
+
+      case "clear":
+        playback.paused="yes";
+        playback.restart="yes";
+        this.setState(function(){
+          return({
+            list: this.createCells("dead")
+          })
+        });
+        return;
+
+      case "random":
+        playback.restart="yes";
+        this.setState(function(){
+          return({list: this.createCells()});
+        });
+        return;
+
+      case "grid":
+        console.log(this.state.grid);
+        this.setState(function(){
+          if(this.state.grid=="off")
+            var ans= "on";
+          else ans= "off";
+          return ({grid: ans})
+        }) 
+        return;
+
+        case "fade":
+        console.log(fadeval);
+        if(this.state.fade=="off") var fadeval="on";
+        else fadeval="off";
+        this.setState(function(){
+          return({fade:fadeval})
+        });
+        return;
+    }
     var ls = e.target.classList;
     var cop= this.state.list.slice();
     var ind= +e.target.id.slice(4);
@@ -240,21 +292,30 @@ var GameBox= React.createClass({
       }
     }
     this.setState(function(){
-      return({list: cop})
+      return({
+        list: cop,})
     });
   },
 
   //render the cells
   render: function(){
-    var rows= this.props.rows,
-      cols  = this.props.cols;
+    var rows  = this.props.rows,
+      cols    = this.props.cols,
+      gridval = this.state.grid,
+      fadeval = this.state.fade,
+      over    = {
+        overflow : gridval=="off"? "visible" : "hidden"
+      };
+
     return(
-    <div className={this.props.className} onClick={this.handleClick}>  
-      <Panel id="panel"/>
+    <div className={this.props.className} onClick={this.handleClick} style={over}>  
+      <Panel id="panel" gen = {this.props.generation}/>
         {this.state.list.map(function(data, index){
-          return(<Cell className={"cell cell-"+data} id={"val-"+index} key={index}/>)
+          return(
+            <Cell className={"cell cell-"+data+" grid-"+gridval+" fade-"+fadeval} id={"val-"+index} key={index}/>
+          )
         })}
-      </div>
+    </div>
       )
   }
 });
@@ -264,8 +325,14 @@ var GameBox= React.createClass({
   var time=0;
   playback.anim = function (){
     time+=1;
+
+    if(playback.restart=="yes"){
+      time=0;
+      playback.restart="no";
+    }
+
     ReactDOM.render(
-    <GameBox className="outerbox" times={time}/> , document.getElementById("Board"));
+    <GameBox className="outerbox" generation={time}/> , document.getElementById("Board"));
     if(playback.paused=="no"){
       window.requestAnimationFrame(playback.anim);
     }
