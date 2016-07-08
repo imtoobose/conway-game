@@ -1,3 +1,4 @@
+//@import 'http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css';
 @mixin center{
   position:absolute;
   left:50%;
@@ -5,8 +6,14 @@
   transform:translate(-50%, -50%);
 }
 
+@import 'https://fonts.googleapis.com/css?family=Fjalla+One';
+$font: 'Fjalla One';
 $back: #2F2F2F;
-$alive: hsla(45, 70, 50, 1);
+$colors: #96F751, #16DB93, #EFEA5A, #F29E4C;
+$alive: nth($colors, floor(random(length($colors))*1));
+$h : hue($alive); 
+$s : saturation($alive);
+$l : lightness($alive);
 
 body{
   background:$back;
@@ -27,11 +34,9 @@ body{
   padding: 0;
   height: 50px;
   width:720px;
-  //background: $alive;
   margin: 0 auto;
   margin-bottom: 10px;
   color: $alive;
-  border: solid black 2px;
 }
 
 .cell{
@@ -39,8 +44,7 @@ body{
   width:10px;
   display:block;
   float:left;
-  background:hsla(45, 70, 50, 0);
-  //border: solid hsla(45, 70, 80, 0.3) 1px;
+  background:hsla($h, $s, $l, 0);
   z-index:5;
   border-radius: 2px;
 }
@@ -54,9 +58,10 @@ body{
     display:block;
     position:relative;
     top:105%;
+    left:-1px;
     height:500%;
-    width: 100%;
-    background: linear-gradient(hsla(45, 70, 50, 0.5), hsla(45, 70, 50, 0));
+    width: 12px;
+    background: linear-gradient(hsla($h, $s, $l, 0.2), hsla($h, $s, $l, 0));
   }
 }
 
@@ -64,7 +69,7 @@ body{
   background: hsla(0,0,0,0);
   &:hover{
     transition:none;
-    background: hsla(45,70,50, 0.4);
+    background: hsla($h,$s,$l, 0.4);
   }
 }
 
@@ -73,36 +78,43 @@ body{
 }
 
 .grid-on{
-  border: solid hsla(45, 30, 30, 0.2) 1px;
+  border: solid hsla($h, $s, $l, 0.2) 1px;
+  &:before{
+    background:none;
+  }
 }
 
 .grid-off{
-  border: solid hsla(45, 70, 80, 0) 1px;
+  border: solid hsla($h, $s, $l, 0) 1px;
 }
 
 .timer{
+  display:block;
   position:relative;
   float:left;
   height: 100%;
-  width: 25%;
   color: white;
-  & > .timerDescription{
-    color:white;
-    position:absolute;
-    left: 0;
-    border: solid red 2px;
-    width: 85px;
+  font-family: $font;
+
+  & > *{
+    position:absolute; 
     top:50%;
-    transform:translateY(-50%);
+    transform:translateY(-50%);   
+  }
+
+  & > .timerDescription{
+    left: 0;
+    width: 85px;
     font-size: 18px;
   }
   & > .timerNumber{
-    position: absolute;
-    top:50%;
-    margin-left:5px;
-    left: 100px;
-    transform:translateY(-50%);
+    left: 90px;
     font-size: 25px;
+  }
+  & > .ConwayName{
+    width: 250px;
+    left: 180px;
+    font-size: 18px;
   }
 }
 

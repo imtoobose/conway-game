@@ -1,3 +1,4 @@
+@import "https://fonts.googleapis.com/css?family=Fjalla+One";
 body {
   background: #2F2F2F; }
 
@@ -17,20 +18,19 @@ body {
   width: 720px;
   margin: 0 auto;
   margin-bottom: 10px;
-  color: #d9ac26;
-  border: solid black 2px; }
+  color: #F29E4C; }
 
 .cell {
   height: 10px;
   width: 10px;
   display: block;
   float: left;
-  background: rgba(217, 172, 38, 0);
+  background: rgba(242, 158, 76, 0);
   z-index: 5;
   border-radius: 2px; }
 
 .cell-alive {
-  background: #d9ac26;
+  background: #F29E4C;
   transition: color 0.1s linear !important; }
   .cell-alive:before {
     content: '';
@@ -38,47 +38,50 @@ body {
     display: block;
     position: relative;
     top: 105%;
+    left: -1px;
     height: 500%;
-    width: 100%;
-    background: linear-gradient(rgba(217, 172, 38, 0.5), rgba(217, 172, 38, 0)); }
+    width: 12px;
+    background: linear-gradient(rgba(242, 158, 76, 0.2), rgba(242, 158, 76, 0)); }
 
 .cell-dead {
   background: transparent; }
   .cell-dead:hover {
     transition: none;
-    background: rgba(217, 172, 38, 0.4); }
+    background: rgba(242, 158, 76, 0.4); }
 
 .fade-on {
   transition: background 2s linear; }
 
 .grid-on {
-  border: solid rgba(99, 88, 54, 0.2) 1px; }
+  border: solid rgba(242, 158, 76, 0.2) 1px; }
+  .grid-on:before {
+    background: none; }
 
 .grid-off {
-  border: solid rgba(240, 222, 168, 0) 1px; }
+  border: solid rgba(242, 158, 76, 0) 1px; }
 
 .timer {
+  display: block;
   position: relative;
   float: left;
   height: 100%;
-  width: 25%;
-  color: white; }
-  .timer > .timerDescription {
-    color: white;
+  color: white;
+  font-family: "Fjalla One"; }
+  .timer > * {
     position: absolute;
-    left: 0;
-    border: solid red 2px;
-    width: 85px;
     top: 50%;
-    transform: translateY(-50%);
+    transform: translateY(-50%); }
+  .timer > .timerDescription {
+    left: 0;
+    width: 85px;
     font-size: 18px; }
   .timer > .timerNumber {
-    position: absolute;
-    top: 50%;
-    margin-left: 5px;
-    left: 100px;
-    transform: translateY(-50%);
+    left: 90px;
     font-size: 25px; }
+  .timer > .ConwayName {
+    width: 250px;
+    left: 180px;
+    font-size: 18px; }
 
 .panel-button {
   background: none;
@@ -99,7 +102,7 @@ body {
     top: 50%;
     transform: translate(-50%, -50%); }
   .panel-button:hover {
-    color: #d9ac26; }
+    color: #F29E4C; }
     .panel-button:hover i {
       font-size: 35px; }
 

@@ -55,6 +55,15 @@ var Panel = React.createClass({
           "span",
           { className: "timerNumber" },
           gen
+        ),
+        React.createElement(
+          "div",
+          { className: "ConwayName" },
+          React.createElement(
+            "span",
+            { className: "actualtitle" },
+            " Conway's Game Of Life : React.js"
+          )
         )
       ),
       list.map(function (data) {
@@ -176,7 +185,6 @@ var GameBox = React.createClass({
     for (var i = 0; i < this.props.rows; i++) {
       for (var j = 0; j < this.props.cols; j++) {
         if (option == "dead" || option == "alive") {
-          console.log(option);
           choice = option;
         } else {
           choice = Math.floor(Math.random() * 10) == 1 ? "alive" : "dead";
@@ -192,7 +200,9 @@ var GameBox = React.createClass({
   //the time prop changes every X seconds and
   //thus the animation is started
   componentWillReceiveProps: function () {
-    var ls = this.state.list.slice();
+    var ls = this.state.list.slice(),
+        deadcnt = 0;
+
     for (var r = 0; r < this.props.rows; r++) {
       for (var c = 0; c < this.props.cols; c++) {
         var ind = this.checkalive(r, c),
@@ -208,12 +218,15 @@ var GameBox = React.createClass({
         else {
             if (ind < 2) ls[actind] = "dead";else if (ind > 3) ls[actind] = "dead";
           }
+        if (ls[actind] == "dead") deadcnt++;
       }
     }
 
     //change the state
     //this causes us to have only one state component
     //all cells are stateless
+    if (deadcnt == this.props.rows * this.props.cols) playback.paused = "yes", playback.restart = "yes";
+    console.log(deadcnt);
     this.setState(function () {
       return { list: ls };
     });
@@ -228,18 +241,19 @@ var GameBox = React.createClass({
         if (playback.paused == "yes") {
           playback.paused = "no";
           window.requestAnimationFrame(playback.anim);
-          return;
         }
+        return;
 
       case "pause":
         if (playback.paused == "no") {
           playback.paused = "yes";
-          return;
         }
+        return;
 
       case "clear":
         playback.paused = "yes";
         playback.restart = "yes";
+
         this.setState(function () {
           return {
             list: this.createCells("dead")
@@ -305,7 +319,7 @@ var GameBox = React.createClass({
     return React.createElement(
       "div",
       { className: this.props.className, onClick: this.handleClick, style: over },
-      React.createElement(Panel, { id: "panel", gen: this.props.generation }),
+      React.createElement(Panel, { id: "panel", gen: playback.restart == "no" ? this.props.generation : 0 }),
       this.state.list.map(function (data, index) {
         return React.createElement(Cell, { className: "cell cell-" + data + " grid-" + gridval + " fade-" + fadeval, id: "val-" + index, key: index });
       })
@@ -317,8 +331,6 @@ var GameBox = React.createClass({
   //time: to keep the animation going and get the generation
   var time = 0;
   playback.anim = function () {
-    time += 1;
-
     if (playback.restart == "yes") {
       time = 0;
       playback.restart = "no";
@@ -328,6 +340,7 @@ var GameBox = React.createClass({
     if (playback.paused == "no") {
       window.requestAnimationFrame(playback.anim);
     }
+    time += 1;
   };
   window.requestAnimationFrame(playback.anim);
 }).call(this);
